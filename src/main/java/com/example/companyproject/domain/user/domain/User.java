@@ -18,7 +18,7 @@ public class User {
     private Long id;
 
     @NotNull
-    @Column(columnDefinition = "VARCHAR(100)")
+    @Column(columnDefinition = "VARCHAR(100)", unique = true)
     private String name;
 
 }
