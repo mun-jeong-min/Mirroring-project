@@ -21,4 +21,8 @@ public class User {
     @Column(columnDefinition = "VARCHAR(100)", unique = true)
     private String name;
 
+    @NotNull
+    @Column(columnDefinition = "VARCHAR(100)")
+    private String password;
+
 }
