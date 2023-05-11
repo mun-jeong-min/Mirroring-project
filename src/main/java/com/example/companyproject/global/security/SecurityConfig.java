@@ -31,8 +31,9 @@ public class SecurityConfig {
         http
                 .authorizeRequests()
 
-                .antMatchers(HttpMethod.GET, "/user").permitAll()
-
+                .antMatchers(HttpMethod.POST, "/user").permitAll()
+                .antMatchers(HttpMethod.POST, "/user/login").permitAll()
+                
                 .anyRequest().authenticated()
                 .and()
                 .apply(new FilterConfig(objectMapper, jwtTokenProvider));
