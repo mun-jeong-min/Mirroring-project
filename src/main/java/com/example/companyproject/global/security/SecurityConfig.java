@@ -34,7 +34,7 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.POST, "/user").permitAll()
                 .antMatchers(HttpMethod.POST, "/user/login").permitAll()
                 
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()
                 .and()
                 .apply(new FilterConfig(objectMapper, jwtTokenProvider));
 
