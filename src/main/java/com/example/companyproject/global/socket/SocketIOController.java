@@ -2,10 +2,13 @@ package com.example.companyproject.global.socket;
 
 import com.corundumstudio.socketio.AckRequest;
 import com.corundumstudio.socketio.SocketIOClient;
+import com.corundumstudio.socketio.SocketIONamespace;
 import com.corundumstudio.socketio.SocketIOServer;
-import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.listener.DataListener;
-import com.corundumstudio.socketio.listener.DisconnectListener;
+import com.example.companyproject.domain.chat.domain.Message;
+import com.example.companyproject.domain.chat.domain.repository.MessageRepository;
+import com.example.companyproject.domain.chat.facade.RoomFacade;
+import com.example.companyproject.domain.user.facade.UserFacade;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -13,40 +16,50 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class SocketIOController {
 
-    private final SocketIOServer socketServer;
+    private final MessageRepository messageRepository;
+    private final RoomFacade roomFacade;
+    private final UserFacade userFacade;
+    private final SocketIONamespace namespace;
 
-    SocketIOController(SocketIOServer socketServer){
-        this.socketServer=socketServer;
-        this.socketServer.addConnectListener(onUserConnectWithSocket);
-        this.socketServer.addDisconnectListener(onUserDisconnectWithSocket);
-        this.socketServer.addEventListener("messageSendToUser", MessageDto.class, onSendMessage);
+    SocketIOController(SocketIOServer socketServer, MessageRepository messageRepository, RoomFacade roomFacade, UserFacade userFacade){
+
+        namespace = socketServer.addNamespace("/chat");
+
+        namespace.addEventListener("join", MessageDto.class, onJoin());
+        namespace.addEventListener("leave", MessageDto.class, onLeave());
+        namespace.addEventListener("messageSendToUser", MessageDto.class, onSendMessage);
+
+        this.messageRepository = messageRepository;
+        this.roomFacade = roomFacade;
+        this.userFacade = userFacade;
     }
 
+    private DataListener<MessageDto> onJoin() {
+        return (client, data, ackSender) -> {
+            client.joinRoom(data.getRoomCode());
+            namespace.getRoomOperations(data.getRoomCode()).sendEvent("join", client.get("username"));
+        };
+    }
 
-    public ConnectListener onUserConnectWithSocket = new ConnectListener() {
-        @Override
-        public void onConnect(SocketIOClient client) {
-            log.info("Perform operation on user connect in controller");
-        }
-    };
-
-
-    public DisconnectListener onUserDisconnectWithSocket = new DisconnectListener() {
-        @Override
-        public void onDisconnect(SocketIOClient client) {
-            log.info("Perform operation on user disconnect in controller");
-        }
-    };
+    private DataListener<MessageDto> onLeave() {
+        return (client, data, ackSender) -> {
+            client.leaveRoom(data.getRoomCode());
+            namespace.getRoomOperations(data.getRoomCode()).sendEvent("leave", client.get("username"));
+        };
+    }
 
     public DataListener<MessageDto> onSendMessage = new DataListener<MessageDto>() {
         @Override
         public void onData(SocketIOClient client, MessageDto message, AckRequest acknowledge) throws Exception {
-
-            log.info(message.getSenderName()+" user send message to user "+message.getTargetUserName()+" and message is "+message.getMessage());
-            socketServer.getBroadcastOperations().sendEvent(message.getTargetUserName(),client, message);
-
-            acknowledge.sendAckData("Message send to target user successfully");
+            namespace.getRoomOperations(message.getRoomCode()).sendEvent("message", client, message.getMessage());
+            String username = client.get("username");
+            messageRepository.save(
+                    Message.builder()
+                            .user(userFacade.getUserByName(username))
+                            .message(message.getMessage())
+                            .room(roomFacade.getRoomById(message.getRoomCode()))
+                            .build()
+            );
         }
     };
-
 }
