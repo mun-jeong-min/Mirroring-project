@@ -1,5 +1,6 @@
 package com.example.companyproject.domain.chat.domain;
 
+import com.example.companyproject.domain.user.domain.User;
 import lombok.*;
 
 import javax.persistence.*;
@@ -17,5 +18,9 @@ public class Room {
 
     @Column
     private String roomName;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
 }

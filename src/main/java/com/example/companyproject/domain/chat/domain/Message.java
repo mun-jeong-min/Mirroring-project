@@ -1,5 +1,6 @@
 package com.example.companyproject.domain.chat.domain;
 
+import com.example.companyproject.domain.user.domain.User;
 import lombok.*;
 
 import javax.persistence.*;
@@ -20,11 +21,12 @@ public class Message {
     @Column
     private String message;
 
-    @Column
-    private String roomCode;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id", nullable = false)
+    private Room room;
 
-    @Column
-    private String userName;
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
 }
