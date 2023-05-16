@@ -12,6 +12,7 @@ public enum ErrorCode {
     INVALID_JWT(401, "jwt-401-1", "토큰 인증 실패"),
 
     USER_NOT_FOUND(404, "user-404-1", "유저를 찾지 못함"),
+    ROOM_NOT_FOUND(404, "room-404-1", "채팅방을 찾지 못함"),
 
     USER_EXIST(409,  "user-409-1", "유저가 존재함");
 
