@@ -7,6 +7,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MessageDto {
     private String senderName;
-    private String targetUserName;
+    private String roomCode;
     private String message;
 }
