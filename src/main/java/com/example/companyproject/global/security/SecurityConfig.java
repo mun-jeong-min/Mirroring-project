@@ -33,7 +33,11 @@ public class SecurityConfig {
 
                 .antMatchers(HttpMethod.POST, "/user").permitAll()
                 .antMatchers(HttpMethod.POST, "/user/login").permitAll()
-                
+
+                .antMatchers(HttpMethod.GET, "/room").authenticated()
+                .antMatchers(HttpMethod.POST, "/user").authenticated()
+                .antMatchers(HttpMethod.GET, "/user/{code}").authenticated()
+
                 .anyRequest().permitAll()
                 .and()
                 .apply(new FilterConfig(objectMapper, jwtTokenProvider));
