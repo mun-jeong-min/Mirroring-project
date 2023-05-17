@@ -2,7 +2,6 @@ package com.example.companyproject.domain.chat.service;
 
 import com.example.companyproject.domain.chat.domain.Room;
 import com.example.companyproject.domain.chat.domain.repository.RoomRepository;
-import com.example.companyproject.domain.chat.facade.RoomFacade;
 import com.example.companyproject.domain.chat.present.dto.CreateRoomRequest;
 import com.example.companyproject.domain.user.facade.UserFacade;
 import lombok.RequiredArgsConstructor;

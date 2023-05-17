@@ -4,7 +4,6 @@ import com.example.companyproject.domain.user.domain.User;
 import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 
 @Getter
 @Builder
