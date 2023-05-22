@@ -1,6 +1,7 @@
 package com.example.companyproject.domain.chat.domain;
 
 import com.example.companyproject.domain.user.domain.User;
+import com.example.companyproject.global.entity.BaseTimeEntity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -11,8 +12,8 @@ import javax.persistence.*;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "tbl_message")
 @Entity
-public class Message {
-
+public class Message extends BaseTimeEntity {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
